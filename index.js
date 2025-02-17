@@ -15,8 +15,11 @@ window.addEventListener("click", (e) => (mouse_down = true));
 window.addEventListener("keydown", (e) => (keys_pressed[e.keyCode] = true));
 window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
 
+window.addEventListener("touchmove", (e) => {
+  player.x = (e.touches[0].clientX / document.body.clientWidth) * canvas.width;
+});
+
 window.addEventListener("mousemove", (e) => {
-  const r = canvas.getBoundingClientRect();
   player.x = (e.offsetX * canvas.width) / canvas.offsetWidth;
 });
 
