@@ -9,9 +9,16 @@ let tick = 0;
 let spawn_interval = 30;
 let score = 0;
 let game_over = false;
+let mouse_down = false;
 
+window.addEventListener("click", (e) => (mouse_down = true));
 window.addEventListener("keydown", (e) => (keys_pressed[e.keyCode] = true));
 window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
+
+window.addEventListener("mousemove", (e) => {
+  const r = canvas.getBoundingClientRect();
+  player.x = (e.offsetX * canvas.width) / canvas.offsetWidth;
+});
 
 (function L() {
   if (game_over) {
@@ -21,16 +28,18 @@ window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
     ctx.font = "12px " + font;
     ctx.fillText("[space] = again", 85, 180);
 
-    if (keys_pressed[32]) {
-      console.log("restarting");
+    if (keys_pressed[32] || mouse_down) {
+      mouse_down = false;
       enemies = [];
       game_over = false;
       score = 0;
     }
   } else {
-    if (keys_pressed[37] && player.x > 0) player.x -= player.speed;
-    if (keys_pressed[39] && player.x < canvas.width - player.w)
-      player.x += player.speed;
+    if (keys_pressed[37]) player.x -= player.speed;
+    if (keys_pressed[39]) player.x += player.speed;
+
+    if (player.x < 0) player.x = 0;
+    if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
 
     tick++;
 
