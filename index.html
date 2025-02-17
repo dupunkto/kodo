@@ -1,0 +1,12 @@
+<canvas style=width:100%;height:100% width=300 height=300></canvas><script>with(document){c=querySelector('canvas'),x=c.getContext('2d'),p={x:140,y:280,w:20,h:20,s:5},o=[],t=0,ti=30,s=0,g=0,k={};addEventListener('keydown',e=>k[e.keyCode]=1);addEventListener('keyup',e=>k[e.keyCode]=0);(function L(){if(g){x.fillStyle='#c5ff8c';x.font='20px monospace';x.fillText('DEAD',120,165);return}if(k[37]&&p.x>0)p.x-=p.s;if(k[39]&&p.x<c.width-p.w)p.x+=p.s;t++;if(t>=ti){t=0;o.push({x:Math.random()*(c.width-20),y:-20,w:20,h:20,s:3+Math.random()*2})}for(var i=0;i<o.length;i++){o[i].y+=o[i].s;
+    if(o[i].x<p.x+p.w && o[i].x+o[i].w>p.x && o[i].y<p.y+p.h && o[i].y+o[i].h>p.y)g=1
+  }
+  o=o.filter(e=>e.y<=c.height?1:(s++,0));
+  x.clearRect(0,0,c.width,c.height);
+  x.fillStyle='#38ba8b';x.fillRect(p.x,p.y,p.w,p.h);
+  x.fillStyle='#227a7a';o.forEach(e=>x.fillRect(e.x,e.y,e.w,e.h));
+  x.fillStyle='#c5ff8c';x.font='16px monospace';x.fillText(s,10,20);
+  requestAnimationFrame(L);
+})();}
+</script>
+<style>body{background:#051233;margin:0}

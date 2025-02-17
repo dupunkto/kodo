@@ -1,0 +1,41 @@
+#!/bin/bash
+
+SRC=index.html
+DIST=qr.png
+
+serve() {
+  waiter --dev
+}
+
+inspect() {
+  tot=2000
+  cur=$(p:build_url | p:encode_url | wc -c | awk '{$1=$1;print}')
+  per=$(echo "scale=2; ($cur / $tot) * 100" | bc)
+
+  echo "max: $tot bytes"
+  echo "cur: $cur bytes"
+  echo
+  echo "used $per% of available space"
+}
+
+build() {
+  p:build_url | p:encode_url | p:build_qr
+}
+
+run() {
+  open -a /Applications/Google\ Chrome.app "$(p:build_url)"
+}
+
+# Helpers for constructing the URL and QR code.
+
+p:encode_url() {
+  sed 's/#/%23/g'
+}
+
+p:build_url() {
+  echo "data:text/html,$(cat $SRC | tr -d '\n')"
+}
+
+p:build_qr() {
+  qrencode -o $DIST
+}
