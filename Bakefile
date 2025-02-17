@@ -1,6 +1,5 @@
 #!/bin/bash
 
-SRC=index.html
 DIST=qr.png
 
 serve() {
@@ -9,7 +8,7 @@ serve() {
 
 inspect() {
   tot=2000
-  cur=$(p:build_url | p:encode_url | wc -c | awk '{$1=$1;print}')
+  cur=$(p:minify_js | p:inject_js | p:build_url | wc -c | awk '{$1=$1;print}')
   per=$(echo "scale=2; ($cur / $tot) * 100" | bc)
 
   echo "max: $tot bytes"
@@ -19,23 +18,32 @@ inspect() {
 }
 
 build() {
-  p:build_url | p:encode_url | p:build_qr
+  p:minify_js | p:inject_js
 }
 
 run() {
-  open -a /Applications/Google\ Chrome.app "$(p:build_url)"
+  open -a /Applications/Google\ Chrome.app "$(p:minify_js | p:inject_js | p:build_url)"
 }
 
 # Helpers for constructing the URL and QR code.
+
+p:minify_js() {
+  uglifyjs -mc unsafe --toplevel -- index.js
+}
+
+p:inject_js() {
+  stdin=$(cat)
+  cat index.html | python3 -c "import sys; print(sys.stdin.read().replace(sys.argv[1], sys.argv[2]))" '<script src=index.js></script>' "<script>$(echo $stdin)</script>"
+}
+
+p:build_url() {
+  echo "data:text/html,$(cat | tr -d '\n')"
+}
 
 p:encode_url() {
   sed 's/#/%23/g'
 }
 
-p:build_url() {
-  echo "data:text/html,$(cat $SRC | tr -d '\n')"
-}
-
-p:build_qr() {
+p:generate_qr() {
   qrencode -o $DIST
 }
