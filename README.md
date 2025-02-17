@@ -1,4 +1,4 @@
-# Introducing Kodo: a fully-featured online-multiplayer game in a single HTML Data-URL
+# Introducing Kodo: a game in a single `data:text/html` url
 
 ## Roadmap
 
