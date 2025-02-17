@@ -18,7 +18,7 @@ inspect() {
 }
 
 build() {
-  p:minify_js | p:inject_js
+  p:minify_js | p:inject_js | p:build_url | p:encode_url | p:generate_qr
 }
 
 run() {
