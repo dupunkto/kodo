@@ -1,6 +1,6 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
-const font = "18px monospace";
+const font = "monospace";
 const keys_pressed = {};
 
 let player = { x: 140, y: 280, w: 20, h: 20, speed: 5 };
@@ -16,8 +16,10 @@ window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
 (function L() {
   if (game_over) {
     ctx.fillStyle = "#c5ff8c";
-    ctx.font = font;
+    ctx.font = "18px " + font;
     ctx.fillText("DEAD", 120, 165);
+    ctx.font = "12px " + font;
+    ctx.fillText("[space] = again", 85, 180);
 
     if (keys_pressed[32]) {
       console.log("restarting");
@@ -40,7 +42,7 @@ window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
         y: -20,
         w: 20,
         h: 20,
-        s: 3 + Math.random() * 2,
+        s: 3 + Math.random() + Math.sqrt(score) / 10,
       });
     }
 
@@ -72,7 +74,7 @@ window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
 
     // Draw score
     ctx.fillStyle = "#c5ff8c";
-    ctx.font = font;
+    ctx.font = "16px " + font;
     ctx.fillText(score, 10, 20);
   }
 
