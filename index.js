@@ -3,6 +3,10 @@ const ctx = canvas.getContext("2d");
 const font = "monospace";
 const keys_pressed = {};
 
+const req = await fetch("https://api.geheimesite.nl/kodo/get");
+
+let connected = req.ok;
+let high_score = connected ? await req.text() : 0;
 let player = { x: 140, y: 280, w: 20, h: 20, speed: 5 };
 let enemies = [];
 let tick = 0;
@@ -25,6 +29,21 @@ window.addEventListener("mousemove", (e) => {
 
 (function L() {
   if (game_over) {
+    if (score > high_score) {
+      high_score = score;
+      score = 0;
+
+      if (connected) {
+        fetch("https://api.geheimesite.nl/kodo/new", {
+          method: "POST",
+          body: "hs=" + high_score,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        });
+      }
+    }
+
     ctx.fillStyle = "#c5ff8c";
     ctx.font = "18px " + font;
     ctx.fillText("DEAD", 120, 165);
@@ -38,6 +57,8 @@ window.addEventListener("mousemove", (e) => {
       score = 0;
     }
   } else {
+    mouse_down = false;
+
     if (keys_pressed[37]) player.x -= player.speed;
     if (keys_pressed[39]) player.x += player.speed;
 
@@ -87,7 +108,8 @@ window.addEventListener("mousemove", (e) => {
     // Draw score
     ctx.fillStyle = "#c5ff8c";
     ctx.font = "16px " + font;
-    ctx.fillText(score, 10, 20);
+    ctx.fillText("s " + score, 10, 20);
+    ctx.fillText("h " + high_score, 10, 40);
   }
 
   requestAnimationFrame(L);
