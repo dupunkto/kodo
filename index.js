@@ -3,10 +3,10 @@ const ctx = canvas.getContext("2d");
 const font = "monospace";
 const keys_pressed = {};
 
-const req = await fetch("https://api.geheimesite.nl/kodo/get");
+ctx.fillStyle = "#c5ff8c";
+ctx.font = "18px " + font;
+ctx.fillText("LOADING..", 90, 165);
 
-let connected = req.ok;
-let high_score = connected ? await req.text() : 0;
 let player = { x: 140, y: 280, w: 20, h: 20, speed: 5 };
 let enemies = [];
 let tick = 0;
@@ -14,6 +14,23 @@ let spawn_interval = 30;
 let score = 0;
 let game_over = false;
 let mouse_down = false;
+
+const fetch_highscore = async () => {
+  const req = await fetch("https://api.geheimesite.nl/kodo/get");
+  return req.ok ? await req.text() : 0;
+}
+
+const new_highscore = async (s) => {
+  return await fetch("https://api.geheimesite.nl/kodo/new", {
+    method: "POST",
+    body: "hs=" + s,
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+  });
+}
+
+let high_score = await fetch_highscore();
 
 window.addEventListener("click", (e) => (mouse_down = true));
 window.addEventListener("keydown", (e) => (keys_pressed[e.keyCode] = true));
@@ -27,21 +44,20 @@ window.addEventListener("mousemove", (e) => {
   player.x = (e.offsetX * canvas.width) / canvas.offsetWidth;
 });
 
-(function L() {
+(async function L() {
   if (game_over) {
     if (score > high_score) {
-      high_score = score;
-      score = 0;
+      // Make sure not to compare a stale high score.
+      let fresh = await fetch_highscore();
 
-      if (connected) {
-        fetch("https://api.geheimesite.nl/kodo/new", {
-          method: "POST",
-          body: "hs=" + high_score,
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        });
+      // If you've *really* set a new high score, and
+      // the request did not fail, record the new score.
+      if(score > fresh && fresh > 0) {
+        new_highscore(score);
+        high_score = score;
       }
+
+      score = 0;
     }
 
     ctx.fillStyle = "#c5ff8c";
