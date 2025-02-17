@@ -8,7 +8,7 @@ serve() {
 
 inspect() {
   tot=2000
-  cur=$(p:minify_js | p:inject_js | p:build_url | wc -c | awk '{$1=$1;print}')
+  cur=$(p:minify_js | p:inject_js | p:build_url | p:encode_url | wc -c | awk '{$1=$1;print}')
   per=$(echo "scale=2; ($cur / $tot) * 100" | bc)
 
   echo "max: $tot bytes"
@@ -41,7 +41,7 @@ p:build_url() {
 }
 
 p:encode_url() {
-  sed 's/#/%23/g'
+  sed 's/#/%23/g' | sed 's/ /%20/g'
 }
 
 p:generate_qr() {
