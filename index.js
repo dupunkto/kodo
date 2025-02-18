@@ -5,15 +5,16 @@ const keys_pressed = {};
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
-ctx.fillText("LOADING..", 90, 165);
+ctx.fillText("LOADING...", 90, 165);
 
-let player = { x: 140, y: 280, w: 20, h: 20, speed: 5 };
+let player = { x: 140, y: 280, w: 20, h: 20, speed: 200 };
 let enemies = [];
 let tick = 0;
 let spawn_interval = 37;
 let score = 0;
 let game_over = false;
 let mouse_down = false;
+let ltime = performance.now();
 
 const fetch_highscore = async () => {
   const req = await fetch("https://api.geheimesite.nl/kodo/get");
@@ -44,7 +45,10 @@ window.addEventListener("mousemove", (e) => {
   player.x = (e.offsetX * canvas.width) / canvas.offsetWidth;
 });
 
-(async function L() {
+async function L(ctime) {
+  let dt = (ctime - ltime) / 1000;
+  ltime = ctime;
+
   if (game_over) {
     if (score > high_score) {
       // Make sure not to compare a stale high score.
@@ -75,13 +79,15 @@ window.addEventListener("mousemove", (e) => {
   } else {
     mouse_down = false;
 
-    if (keys_pressed[37]) player.x -= player.speed;
-    if (keys_pressed[39]) player.x += player.speed;
+    let move = player.speed * dt;
 
-    if (player.x < 0) player.x = 0;
-    if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
+    if (keys_pressed[37]) player.x -= move;
+    if (keys_pressed[39]) player.x += move;
 
-    tick++;
+    player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
+
+    tick += dt * 60;
+
     spawn_interval = Math.max(15, spawn_interval -= 0.005); // So it doesn't go to low
 
     if (tick >= spawn_interval) {
@@ -92,12 +98,12 @@ window.addEventListener("mousemove", (e) => {
         y: -20,
         w: 20,
         h: 20,
-        s: 2 + Math.random() * 2 + Math.sqrt(score * 20) / 30
+        s: 100 + Math.random() * 100 + Math.sqrt(score * 20) * 5,
       });
     }
 
     for (let i = 0; i < enemies.length; i++) {
-      enemies[i].y += enemies[i].s;
+      enemies[i].y += enemies[i].s * dt;
 
       if (
         enemies[i].x < player.x + player.w &&
@@ -130,4 +136,6 @@ window.addEventListener("mousemove", (e) => {
   }
 
   requestAnimationFrame(L);
-})();
+}
+
+requestAnimationFrame(L);
