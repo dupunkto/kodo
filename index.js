@@ -10,7 +10,7 @@ ctx.fillText("LOADING..", 90, 165);
 let player = { x: 140, y: 280, w: 20, h: 20, speed: 5 };
 let enemies = [];
 let tick = 0;
-let spawn_interval = 30;
+let spawn_interval = 37;
 let score = 0;
 let game_over = false;
 let mouse_down = false;
@@ -82,6 +82,7 @@ window.addEventListener("mousemove", (e) => {
     if (player.x > canvas.width - player.w) player.x = canvas.width - player.w;
 
     tick++;
+    spawn_interval = Math.max(15, spawn_interval -= 0.005); // So it doesn't go to low
 
     if (tick >= spawn_interval) {
       tick = 0;
@@ -91,7 +92,7 @@ window.addEventListener("mousemove", (e) => {
         y: -20,
         w: 20,
         h: 20,
-        s: 3 + Math.random() + Math.sqrt(score) / 10,
+        s: 2 + Math.random() * 2 + Math.sqrt(score * 20) / 30
       });
     }
 
