@@ -5,9 +5,10 @@ const keys_pressed = {};
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
-ctx.fillText("LOADING...", 90, 165);
+ctx.fillText("LOADING..", 90, 165);
 
-let player = { x: 140, y: 280, w: 20, h: 20, speed: 200 };
+let api = "https://api.geheimesite.nl/kodo";
+let player = { x: 140, y: 280, w: 20, h: 20, s: 200 };
 let enemies = [];
 let tick = 0;
 let spawn_interval = 37;
@@ -17,12 +18,12 @@ let mouse_down = false;
 let ltime = performance.now();
 
 const fetch_highscore = async () => {
-  const req = await fetch("https://api.geheimesite.nl/kodo/get");
+  const req = await fetch(api + "/get");
   return req.ok ? await req.text() : 0;
 }
 
 const new_highscore = async (s) => {
-  return await fetch("https://api.geheimesite.nl/kodo/new", {
+  return await fetch(api + "/new", {
     method: "POST",
     body: "hs=" + s,
     headers: {
@@ -79,16 +80,15 @@ async function L(ctime) {
   } else {
     mouse_down = false;
 
-    let move = player.speed * dt;
-
-    if (keys_pressed[37]) player.x -= move;
-    if (keys_pressed[39]) player.x += move;
+    if (keys_pressed[37]) player.x -= player.s * dt;
+    if (keys_pressed[39]) player.x += player.s * dt;
 
     player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
 
     tick += dt * 60;
 
-    spawn_interval = Math.max(15, spawn_interval -= 0.005); // So it doesn't go to low
+    // So it doesn't go to low
+    spawn_interval = Math.max(15, spawn_interval - 0.005);
 
     if (tick >= spawn_interval) {
       tick = 0;
@@ -98,7 +98,7 @@ async function L(ctime) {
         y: -20,
         w: 20,
         h: 20,
-        s: 100 + Math.random() * 100 + Math.sqrt(score * 20) * 5,
+        s: 300 + Math.random() * 100 + Math.sqrt(score * 500),
       });
     }
 
