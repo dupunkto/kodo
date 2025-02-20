@@ -1,21 +1,21 @@
-const canvas = document.querySelector("canvas");
-const ctx = canvas.getContext("2d");
-const font = "monospace";
-const keys_pressed = {};
+const canvas = document.querySelector("canvas"),
+  ctx = canvas.getContext("2d"),
+  font = "monospace",
+  keys_pressed = {},
+  api = "https://api.geheimesite.nl/kodo";
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
 ctx.fillText("LOADING", 90, 165);
 
-let api = "https://api.geheimesite.nl/kodo";
-let player = { x: 140, y: 280, w: 20, h: 20, s: 200 };
-let enemies = [];
-let tick = 0;
-let spawn_interval = 37;
-let score = 0;
-let game_over = false;
-let mouse_down = false;
-let ltime = performance.now();
+let player = { x: 140, y: 280, w: 20, h: 20, s: 200 },
+  enemies = [],
+  tick = 0,
+  spawn_interval = 37,
+  score = 0,
+  game_over = false,
+  mouse_down = false,
+  ltime = performance.now();
 
 const fetch_highscore = async () => {
   const req = await fetch(api + "/get");
@@ -34,7 +34,7 @@ const new_highscore = async (s) => {
 
 let high_score = await fetch_highscore();
 
-window.addEventListener("click", (e) => (mouse_down = true));
+window.addEventListener("click", () => (mouse_down = true));
 window.addEventListener("keydown", (e) => (keys_pressed[e.keyCode] = true));
 window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
 
@@ -43,9 +43,8 @@ window.addEventListener("touchmove", (e) => {
 });
 
 window.addEventListener("mousemove", (e) => {
-  const rect = canvas.getBoundingClientRect();
-  let mouseX = e.clientX - rect.left;
-  player.x = (Math.max(0, mouseX) * canvas.width) / rect.width;
+  let rect = canvas.getBoundingClientRect();
+  player.x = (Math.max(0, e.clientX - rect.left) * canvas.width) / rect.width;
 });
 
 async function L(ctime) {
