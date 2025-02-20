@@ -21,6 +21,10 @@ build() {
   p:minify_js | p:inject_js | p:build_url | p:encode_url | p:generate_qr
 }
 
+copy() {
+  p:minify_js | p:inject_js | p:build_url | p:encode_url | pbcopy
+}
+
 run() {
   open -a /Applications/Google\ Chrome.app "$(p:minify_js | p:inject_js | p:build_url)"
 }
