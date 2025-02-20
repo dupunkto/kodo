@@ -1,5 +1,7 @@
 # Kodo
 
+Esperanto for *code*
+
 A game inside a qr code! Just scan and open the link (or copy-paste it) and you can play this amazing game!
 
 <center><img src="qr.png" width="500" height="500" /></center>
