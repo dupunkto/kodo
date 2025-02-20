@@ -11,13 +11,12 @@ ctx.fillText("LOADING..", 90, 165);
 const fetch_api = async (endpoint) => {
   const req = await fetch(api + endpoint);
   return req.ok ? await req.text() : 0;
-}
+};
 
 let high_score = await fetch_api("/get");
-let player = { x: 140, y: 280, w: 20, h: 20, s: 200 };
+let player = { x: 140, y: 280, w: 20, h: 20 };
 let enemies = [];
 let tick = 0;
-let spawn_interval = 37;
 let score = 0;
 let game_over = false;
 let mouse_down = false;
@@ -38,6 +37,14 @@ bind_event("mousemove", (e) => {
   player.x = (Math.max(0, e.clientX - rect.left) * canvas.width) / rect.width;
 });
 
+// Will gradually decrease
+let spawn_interval = 37;
+
+const movement_speed = 200;
+const base_speed = 300;
+const speed_multiplier = 600;
+const speed_variance = 100;
+
 async function L(ctime) {
   let dt = (ctime - ltime) / 1000;
   ltime = ctime;
@@ -49,7 +56,7 @@ async function L(ctime) {
 
       // If you've *really* set a new high score, and
       // the request did not fail, record the new score.
-      if(score > fresh && fresh > 0) {
+      if (score > fresh && fresh > 0) {
         fetch_api("/new?hs=" + score);
         high_score = score;
       }
@@ -72,8 +79,8 @@ async function L(ctime) {
   } else {
     mouse_down = false;
 
-    if (keys_pressed[37]) player.x -= player.s * dt;
-    if (keys_pressed[39]) player.x += player.s * dt;
+    if (keys_pressed[37]) player.x -= movement_speed * dt;
+    if (keys_pressed[39]) player.x += movement_speed * dt;
 
     player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
 
@@ -85,12 +92,15 @@ async function L(ctime) {
     if (tick >= spawn_interval) {
       tick = 0;
 
+      const r_component = Math.random() * speed_variance;
+      const l_component = Math.sqrt(score * speed_multiplier);
+
       enemies.push({
         x: Math.random() * (canvas.width - 20),
         y: -20,
         w: 20,
         h: 20,
-        s: 300 + Math.random() * 100 + Math.sqrt(score * 500),
+        s: base_speed + r_component + l_component,
       });
     }
 
