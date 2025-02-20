@@ -2,7 +2,7 @@
 
 A game inside a qr code! Just scan and open the link (or copy-paste it) and you can play this amazing game!
 
-<center><img src="qr.png" width="500" height="500" /><center>
+<center><img src="qr.png" width="500" height="500" /></center>
 
 The entire game is contained in a single `data:text/html` URL, which mostly kinda sortof sometimes works on a few moderately modern web browsers. You'll probably need to copy paste the URL manually (because SeCUrItY) but it works :D
 
