@@ -5,7 +5,7 @@ const keys_pressed = {};
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
-ctx.fillText("LOADING..", 90, 165);
+ctx.fillText("LOADING", 90, 165);
 
 let api = "https://api.geheimesite.nl/kodo";
 let player = { x: 140, y: 280, w: 20, h: 20, s: 200 };
@@ -43,7 +43,9 @@ window.addEventListener("touchmove", (e) => {
 });
 
 window.addEventListener("mousemove", (e) => {
-  player.x = (e.offsetX * canvas.width) / canvas.offsetWidth;
+  const rect = canvas.getBoundingClientRect();
+  let mouseX = e.clientX - rect.left;
+  player.x = (Math.max(0, mouseX) * canvas.width) / rect.width;
 });
 
 async function L(ctime) {
@@ -131,7 +133,7 @@ async function L(ctime) {
     // Draw score
     ctx.fillStyle = "#c5ff8c";
     ctx.font = "16px " + font;
-    ctx.fillText("s " + score, 10, 20);
+    ctx.fillText(score, 10, 20);
     ctx.fillText("h " + high_score, 10, 40);
   }
 
