@@ -1,48 +1,39 @@
-const canvas = document.querySelector("canvas"),
-  ctx = canvas.getContext("2d"),
-  font = "monospace",
-  keys_pressed = {},
-  api = "https://api.geheimesite.nl/kodo";
+const canvas = document.querySelector("canvas");
+const ctx = canvas.getContext("2d");
+const font = "monospace";
+const keys_pressed = {};
+const api = "https://api.geheimesite.nl/kodo";
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
-ctx.fillText("LOADING", 90, 165);
+ctx.fillText("LOADING..", 90, 165);
 
-let player = { x: 140, y: 280, w: 20, h: 20, s: 200 },
-  enemies = [],
-  tick = 0,
-  spawn_interval = 37,
-  score = 0,
-  game_over = false,
-  mouse_down = false,
-  ltime = performance.now();
-
-const fetch_highscore = async () => {
-  const req = await fetch(api + "/get");
+const fetch_api = async (endpoint) => {
+  const req = await fetch(api + endpoint);
   return req.ok ? await req.text() : 0;
 }
 
-const new_highscore = async (s) => {
-  return await fetch(api + "/new", {
-    method: "POST",
-    body: "hs=" + s,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  });
-}
+let high_score = await fetch_api("/get");
+let player = { x: 140, y: 280, w: 20, h: 20, s: 200 };
+let enemies = [];
+let tick = 0;
+let spawn_interval = 37;
+let score = 0;
+let game_over = false;
+let mouse_down = false;
+let ltime = performance.now();
 
-let high_score = await fetch_highscore();
+const bind_event = window.addEventListener;
 
-window.addEventListener("click", () => (mouse_down = true));
-window.addEventListener("keydown", (e) => (keys_pressed[e.keyCode] = true));
-window.addEventListener("keyup", (e) => (keys_pressed[e.keyCode] = false));
+bind_event("click", () => (mouse_down = true));
+bind_event("keydown", (e) => (keys_pressed[e.keyCode] = true));
+bind_event("keyup", (e) => (keys_pressed[e.keyCode] = false));
 
-window.addEventListener("touchmove", (e) => {
+bind_event("touchmove", (e) => {
   player.x = (e.touches[0].clientX / document.body.clientWidth) * canvas.width;
 });
 
-window.addEventListener("mousemove", (e) => {
+bind_event("mousemove", (e) => {
   let rect = canvas.getBoundingClientRect();
   player.x = (Math.max(0, e.clientX - rect.left) * canvas.width) / rect.width;
 });
@@ -54,12 +45,12 @@ async function L(ctime) {
   if (game_over) {
     if (score > high_score) {
       // Make sure not to compare a stale high score.
-      let fresh = await fetch_highscore();
+      let fresh = await fetch_api("/get");
 
       // If you've *really* set a new high score, and
       // the request did not fail, record the new score.
       if(score > fresh && fresh > 0) {
-        new_highscore(score);
+        fetch_api("/new?hs=" + score);
         high_score = score;
       }
 
@@ -132,8 +123,8 @@ async function L(ctime) {
     // Draw score
     ctx.fillStyle = "#c5ff8c";
     ctx.font = "16px " + font;
-    ctx.fillText(score, 10, 20);
-    ctx.fillText("h " + high_score, 10, 40);
+    ctx.fillText("s" + score, 10, 20);
+    ctx.fillText("h" + high_score, 10, 40);
   }
 
   requestAnimationFrame(L);
