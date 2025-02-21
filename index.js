@@ -40,12 +40,13 @@ bind_event("mousemove", (e) => {
 });
 
 // Will gradually decrease
-let spawn_interval = 33;
-let coin_interval = 100;
+let spawn_interval = 31;
+let coin_interval = 120;
 const movement_speed = 400;
 const base_speed = 300;
 const speed_multiplier = 600;
-const speed_variance = 100;
+const speed_variance = 120;
+const speed_variance_coin = 80;
 
 async function L(ctime) {
   let dt = (ctime - ltime) / 1000;
@@ -73,6 +74,7 @@ async function L(ctime) {
     ctx.fillText("[space] = again", 85, 180);
 
     if (keys_pressed[32] || mouse_down) {
+      // Restart game
       mouse_down = false;
       enemies = [];
       coins = [];
@@ -96,8 +98,8 @@ async function L(ctime) {
     if (tick >= spawn_interval) {
       tick = 0;
 
-      const r_component = Math.random() * speed_variance;
-      const l_component = Math.sqrt(score * speed_multiplier);
+      let r_component = Math.random() * speed_variance;
+      let l_component = Math.sqrt(score * speed_multiplier);
 
       enemies.push({
         x: Math.random() * (canvas.width - 20),
@@ -111,8 +113,8 @@ async function L(ctime) {
     if (coin_tick >= coin_interval) {
       coin_tick = 0;
 
-      const r_component = Math.random() * speed_variance;
-      const l_component = Math.sqrt(score * speed_multiplier);
+      let r_component = Math.random() * speed_variance_coin;
+      let l_component = Math.sqrt(score * speed_variance_coin);
 
       coins.push({
         x: Math.random() * (canvas.width - 20),
@@ -163,7 +165,7 @@ async function L(ctime) {
     ctx.fillStyle = "#227a7a";
     enemies.forEach((e) => ctx.fillRect(e.x, e.y, e.w, e.h));
 
-    // Draw enemies
+    // Draw coins
     ctx.fillStyle = "#f8e86d";
     coins.forEach((e) => ctx.fillRect(e.x, e.y, e.w, e.h));
 
