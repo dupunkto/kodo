@@ -40,8 +40,8 @@ bind_event("mousemove", (e) => {
 });
 
 // Will gradually decrease
-let enemy_interval = 31;
 let coin_interval = 120;
+let enemy_interval = 31;
 
 const movement_speed = 400;
 const base_speed = 300;
