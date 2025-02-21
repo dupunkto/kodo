@@ -6,7 +6,7 @@ const api = "https://api.geheimesite.nl/kodo";
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
-ctx.fillText("LOADING..", 90, 165);
+ctx.fillText("LOADING...", 90, 165);
 
 const fetch_api = async (endpoint) => {
   const req = await fetch(api + endpoint);
