@@ -38,9 +38,8 @@ bind_event("mousemove", (e) => {
 });
 
 // Will gradually decrease
-let spawn_interval = 37;
-
-const movement_speed = 200;
+let spawn_interval = 33;
+const movement_speed = 400;
 const base_speed = 300;
 const speed_multiplier = 600;
 const speed_variance = 100;
