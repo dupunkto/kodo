@@ -2,7 +2,7 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const font = "monospace";
 const keys_pressed = {};
-const api = "https://api.geheimesite.nl/kodo";
+const api = "https://www.gijs6.nl/k";
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
