@@ -14,7 +14,7 @@ const fetch_api = async (endpoint) => {
 };
 
 let high_score = await fetch_api("/get");
-let player = { x: 140, y: 280, w: 20, h: 20 };
+let player = { x: 140, y: 280, w: 20 };
 let coins = [];
 let enemies = [];
 let coin_tick = 0;
@@ -109,7 +109,6 @@ async function L(ctime) {
         x: random_position,
         y: -20,
         w: size,
-        h: size,
         s: random_speed,
       });
     }
@@ -127,8 +126,8 @@ async function L(ctime) {
     const collide = (a, b) => (
       a.x < b.x + b.w &&
       a.x + a.w > b.x &&
-      a.y < b.y + b.h &&
-      a.y + a.h > b.y
+      a.y < b.y + b.w &&
+      a.y + a.w > b.y
     );
 
     enemies = enemies.filter((enemy) => {
@@ -142,7 +141,7 @@ async function L(ctime) {
       return collide(coin, player) ? (score += 2, false) : true;
     });
 
-    const draw = (e) => ctx.fillRect(e.x, e.y, e.w, e.h);
+    const draw = (e) => ctx.fillRect(e.x, e.y, e.w, e.w);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
