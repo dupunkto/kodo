@@ -138,7 +138,10 @@ async function L(ctime) {
 
     coins = coins.filter((coin) => {
       coin.y += coin.s * dt;
-      return collide(coin, player) ? (score += 2, false) : true;
+      if(collide(coin, player)) {
+        return (score += 3, false);
+      }
+      return coin.y <= canvas.height;
     });
 
     const draw = (e) => ctx.fillRect(e.x, e.y, e.w, e.w);
