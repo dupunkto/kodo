@@ -16,7 +16,9 @@ const fetch_api = async (endpoint) => {
 let high_score = await fetch_api("/get");
 let player = { x: 140, y: 280, w: 20, h: 20 };
 let enemies = [];
+let coins = [];
 let tick = 0;
+let coin_tick = 0;
 let score = 0;
 let game_over = false;
 let mouse_down = false;
@@ -39,6 +41,7 @@ bind_event("mousemove", (e) => {
 
 // Will gradually decrease
 let spawn_interval = 33;
+let coin_interval = 100;
 const movement_speed = 400;
 const base_speed = 300;
 const speed_multiplier = 600;
@@ -72,6 +75,7 @@ async function L(ctime) {
     if (keys_pressed[32] || mouse_down) {
       mouse_down = false;
       enemies = [];
+      coins = [];
       game_over = false;
       score = 0;
     }
@@ -84,9 +88,10 @@ async function L(ctime) {
     player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
 
     tick += dt * 60;
+    coin_tick += dt * 60;
 
     // So it doesn't go to low
-    spawn_interval = Math.max(15, spawn_interval - 0.005);
+    spawn_interval = Math.max(15, spawn_interval - Math.random() * (0.01 - 0.001) + 0.001);
 
     if (tick >= spawn_interval) {
       tick = 0;
@@ -103,6 +108,21 @@ async function L(ctime) {
       });
     }
 
+    if (coin_tick >= coin_interval) {
+      coin_tick = 0;
+
+      const r_component = Math.random() * speed_variance;
+      const l_component = Math.sqrt(score * speed_multiplier);
+
+      coins.push({
+        x: Math.random() * (canvas.width - 20),
+        y: -20,
+        w: 10,
+        h: 10,
+        s: base_speed + r_component + l_component,
+      });
+    }
+
     for (let i = 0; i < enemies.length; i++) {
       enemies[i].y += enemies[i].s * dt;
 
@@ -113,6 +133,20 @@ async function L(ctime) {
         enemies[i].y + enemies[i].h > player.y
       )
         game_over = true;
+    }
+
+    for (let i = 0; i < coins.length; i++) {
+      coins[i].y += coins[i].s * dt;
+
+      if (
+        coins[i].x < player.x + player.w &&
+        coins[i].x + coins[i].w > player.x &&
+        coins[i].y < player.y + player.h &&
+        coins[i].y + coins[i].h > player.y
+      ) {
+        score += 2;
+        coins.splice(i, 1);
+      }
     }
 
     enemies = enemies.filter((e) =>
@@ -128,6 +162,10 @@ async function L(ctime) {
     // Draw enemies
     ctx.fillStyle = "#227a7a";
     enemies.forEach((e) => ctx.fillRect(e.x, e.y, e.w, e.h));
+
+    // Draw enemies
+    ctx.fillStyle = "#f8e86d";
+    coins.forEach((e) => ctx.fillRect(e.x, e.y, e.w, e.h));
 
     // Draw score
     ctx.fillStyle = "#c5ff8c";
