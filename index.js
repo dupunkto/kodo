@@ -4,6 +4,10 @@ const font = "monospace";
 const keys_pressed = {};
 const api = "https://www.gijs6.nl/k";
 
+// Often used, but canvas.width andcanvas_h can't be minified, but consts can
+const canvas_w = canvas.width;
+const canvas_h =canvas.height;
+
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
 ctx.fillText("LOADING..", 90, 165);
@@ -31,12 +35,12 @@ bind_event("keydown", (e) => (keys_pressed[e.keyCode] = true));
 bind_event("keyup", (e) => (keys_pressed[e.keyCode] = false));
 
 bind_event("touchmove", (e) => {
-  player.x = (e.touches[0].clientX / document.body.clientWidth) * canvas.width;
+  player.x = (e.touches[0].clientX / document.body.clientWidth) * canvas_w;
 });
 
 bind_event("mousemove", (e) => {
   let rect = canvas.getBoundingClientRect();
-  player.x = (Math.max(0, e.clientX - rect.left) * canvas.width) / rect.width;
+  player.x = (Math.max(0, e.clientX - rect.left) * canvas_w) / rect.width;
 });
 
 // Will gradually decrease
@@ -54,6 +58,9 @@ async function L(ctime) {
   ltime = ctime;
 
   if (game_over) {
+    ctx.fillStyle = "#c5ff8c";
+    ctx.font = "18px " + font;
+
     if (score > high_score) {
       // Make sure not to compare a stale high score.
       let fresh = await fetch_api("/get");
@@ -63,20 +70,16 @@ async function L(ctime) {
       if (score > fresh && fresh > 0) {
         fetch_api("/new?hs=" + score);
         high_score = score;
+        ctx.fillText("NEW HIGH SCORE", 80, 120);
       }
-
-      score = 0;
     }
 
-    ctx.fillStyle = "#c5ff8c";
-    ctx.font = "18px " + font;
     ctx.fillText("DEAD", 120, 165);
     ctx.font = "12px " + font;
-    ctx.fillText("[space] = again", 85, 180);
+    ctx.fillText("[space]=again", 85, 180);
 
     if (keys_pressed[32] || mouse_down) {
       // Restart game
-      mouse_down = false;
       enemies = [];
       coins = [];
       game_over = false;
@@ -89,21 +92,21 @@ async function L(ctime) {
     if (keys_pressed[39]) player.x += movement_speed * dt;
 
     // Make sure the player cannot teleport out of the screen.
-    player.x = Math.max(0, Math.min(canvas.width - player.w, player.x));
+    player.x = Math.max(0, Math.min(canvas_w - player.w, player.x));
 
     coin_tick += dt * 60;
     enemy_tick += dt * 60;
 
-    // Gradually decrease spawn interval but ensure
+    // Gradually (but a bit randomly) decrease spawn interval but ensure
     // it doesn't drop below a minimum value.
-    enemy_interval = Math.max(15, enemy_interval - Math.random() * (0.01 - 0.001) + 0.001);
+    enemy_interval = Math.max(15, enemy_interval - Math.random() * 0.009 + 0.001);
 
     const spawn = (collection, size, speed_variance) => {
       let r_component = Math.random() * speed_variance;
       let l_component = Math.sqrt(score * speed_multiplier);
 
       const random_speed = base_speed + r_component + l_component;
-      const random_position = Math.random() * (canvas.width - 20);
+      const random_position = Math.random() * (canvas_w - 20);
 
       collection.push({
         x: random_position,
@@ -133,7 +136,7 @@ async function L(ctime) {
     enemies = enemies.filter((enemy) => {
       enemy.y += enemy.s * dt;
       if(collide(enemy, player)) game_over = true;
-      return enemy.y <= canvas.height ? true : (score++, false)
+      return enemy.y <=canvas_h ? true : (score++, false)
     });
 
     coins = coins.filter((coin) => {
@@ -141,12 +144,12 @@ async function L(ctime) {
       if(collide(coin, player)) {
         return (score += 3, false);
       }
-      return coin.y <= canvas.height;
+      return coin.y <=canvas_h;
     });
 
     const draw = (e) => ctx.fillRect(e.x, e.y, e.w, e.w);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas_w,canvas_h);
 
     // Draw player
     ctx.fillStyle = "#38ba8b";
