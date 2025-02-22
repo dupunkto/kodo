@@ -45,7 +45,7 @@ bind_event("mousemove", (e) => {
 
 // Will gradually decrease
 let coin_interval = 120;
-let enemy_interval = 31;
+let enemy_interval = 35;
 
 const movement_speed = 400;
 const base_speed = 300;
@@ -99,7 +99,7 @@ async function L(ctime) {
 
     // Gradually (but a bit randomly) decrease spawn interval but ensure
     // it doesn't drop below a minimum value.
-    enemy_interval = Math.max(15, enemy_interval - Math.random() * 0.009 + 0.001);
+    enemy_interval = Math.max(15, enemy_interval - Math.random() * 0.007 + 0.001);
 
     const spawn = (collection, size, speed_variance) => {
       let r_component = Math.random() * speed_variance;
@@ -142,7 +142,7 @@ async function L(ctime) {
     coins = coins.filter((coin) => {
       coin.y += coin.s * dt;
       if(collide(coin, player)) {
-        return (score += 3, false);
+        return (score += 5, false);
       }
       return coin.y <=canvas_h;
     });
