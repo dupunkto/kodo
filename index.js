@@ -4,9 +4,10 @@ const font = "monospace";
 const keys_pressed = {};
 const api = "https://www.gijs6.nl/k";
 
-// Often used, but canvas.width andcanvas_h can't be minified, but consts can
+// Often used, but canvas.width and canvas.height
+// can't be minified, but variables can.
 const canvas_w = canvas.width;
-const canvas_h =canvas.height;
+const canvas_h = canvas.height;
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
@@ -114,7 +115,7 @@ async function L(ctime) {
         w: size,
         s: random_speed,
       });
-    }
+    };
 
     if (enemy_tick >= enemy_interval) {
       spawn(enemies, 20, speed_variance_enemy);
@@ -135,21 +136,21 @@ async function L(ctime) {
 
     enemies = enemies.filter((enemy) => {
       enemy.y += enemy.s * dt;
-      if(collide(enemy, player)) game_over = true;
-      return enemy.y <=canvas_h ? true : (score++, false)
+      if (collide(enemy, player)) game_over = true;
+      return enemy.y <= canvas_h ? true : (score++, false);
     });
 
     coins = coins.filter((coin) => {
       coin.y += coin.s * dt;
-      if(collide(coin, player)) {
-        return (score += 5, false);
+      if (collide(coin, player)) {
+        return (score += 5), false;
       }
-      return coin.y <=canvas_h;
+      return coin.y <= canvas_h;
     });
 
     const draw = (e) => ctx.fillRect(e.x, e.y, e.w, e.w);
 
-    ctx.clearRect(0, 0, canvas_w,canvas_h);
+    ctx.clearRect(0, 0, canvas_w, canvas_h);
 
     // Draw player
     ctx.fillStyle = "#38ba8b";
@@ -171,6 +172,6 @@ async function L(ctime) {
   }
 
   requestAnimationFrame(L);
-};
+}
 
 requestAnimationFrame(L);
