@@ -2,7 +2,7 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const font = "monospace";
 const keys_pressed = {};
-const api = "https://www.gijs6.nl/k";
+const api = "https://www.gijs6.nl/kodo";
 
 // Often used, but canvas.width and canvas.height
 // can't be minified, but variables can.
@@ -11,7 +11,7 @@ const canvas_h = canvas.height;
 
 ctx.fillStyle = "#c5ff8c";
 ctx.font = "18px " + font;
-ctx.fillText("LOADING..", 90, 165);
+ctx.fillText("LOADING", 90, 165);
 
 const fetch_api = async (endpoint) => {
   const req = await fetch(api + endpoint);
@@ -69,7 +69,7 @@ async function L(ctime) {
       // If you've *really* set a new high score, and
       // the request did not fail, record the new score.
       if (score > fresh && fresh > 0) {
-        fetch_api("/new?hs=" + score);
+        fetch_api("/new?s=" + score);
         high_score = score;
         ctx.fillText("NEW HIGH SCORE", 80, 120);
       }
