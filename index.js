@@ -2,20 +2,24 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const font = "monospace";
 const keys_pressed = {};
-const api = "https://www.gijs6.nl/kodo";
+const api = "https://api.dupunkto.org/kodo";
 
 // Often used, but canvas.width and canvas.height
 // can't be minified, but variables can.
 const canvas_w = canvas.width;
 const canvas_h = canvas.height;
 
-ctx.fillStyle = "#c5ff8c";
+// Same for these.
+const bind_event = window.addEventListener;
+const fill_text = ctx.fillText.bind(ctx);
+
 ctx.font = "18px " + font;
-ctx.fillText("LOADING", 90, 165);
+ctx.fillStyle = "#c5ff8c";
+fill_text("LOADING", 90, 165);
 
 const fetch_api = async (endpoint) => {
   const req = await fetch(api + endpoint);
-  return req.ok ? await req.text() : 0;
+  return req.ok ? await req.json() || 0 : 0;
 };
 
 let high_score = await fetch_api("/get");
@@ -28,8 +32,6 @@ let score = 0;
 let game_over = false;
 let mouse_down = false;
 let ltime = performance.now();
-
-const bind_event = window.addEventListener;
 
 bind_event("click", () => (mouse_down = true));
 bind_event("keydown", (e) => (keys_pressed[e.keyCode] = true));
@@ -68,16 +70,16 @@ async function L(ctime) {
 
       // If you've *really* set a new high score, and
       // the request did not fail, record the new score.
-      if (score > fresh && fresh > 0) {
+      if (score > fresh || fresh == 0) {
         fetch_api("/new?s=" + score);
         high_score = score;
-        ctx.fillText("NEW HIGH SCORE", 80, 120);
+        fill_text("NEW HIGH SCORE", 80, 120);
       }
     }
 
-    ctx.fillText("DEAD", 120, 165);
+    fill_text("DEAD", 120, 165);
     ctx.font = "12px " + font;
-    ctx.fillText("[space]=again", 85, 180);
+    fill_text("[space]=again", 90, 180);
 
     if (keys_pressed[32] || mouse_down) {
       // Restart game
@@ -167,8 +169,8 @@ async function L(ctime) {
     // Draw score
     ctx.fillStyle = "#c5ff8c";
     ctx.font = "16px " + font;
-    ctx.fillText("s" + score, 10, 20);
-    ctx.fillText("h" + high_score, 10, 40);
+    fill_text("s" + score, 10, 20);
+    fill_text("h" + high_score, 10, 40);
   }
 
   requestAnimationFrame(L);

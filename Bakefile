@@ -2,6 +2,10 @@
 
 DIST=qr.png
 
+setup() {
+  bun i
+}
+
 serve() {
   waiter --dev
 }
